@@ -15,13 +15,18 @@ import {
 import { Input } from "@/components/ui/input"
 import { SignUpFormSchema } from "@/lib/validation"
 import Loader from "@/components/shared/Loader"
-import { Link } from "react-router-dom"
-import { createUserAccount } from "@/lib/appwrite/api"
+import { Link, useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
+import {
+  useCreateUserAccount,
+  useSignInAccount,
+} from "@/lib/react-query/queries"
+import { useUserContext } from "@/context/AuthContext"
 
 const SignupForm = () => {
   const { toast } = useToast()
-  const isLoading = false
+  const navigate = useNavigate()
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext()
 
   const form = useForm<z.infer<typeof SignUpFormSchema>>({
     resolver: zodResolver(SignUpFormSchema),
@@ -33,16 +38,46 @@ const SignupForm = () => {
     },
   })
 
+  // queries
+  const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } =
+    useCreateUserAccount()
+
+  const { mutateAsync: signInAccount, isLoading: isSigningInUser } =
+    useSignInAccount()
+
   async function onSubmit(values: z.infer<typeof SignUpFormSchema>) {
     const newUser = await createUserAccount(values)
 
-    console.log(newUser)
-
     if (!newUser) {
       toast({ title: "Sign up failed. Please try again." })
+
+      return
     }
 
-    console.log(newUser)
+    const session = await signInAccount({
+      email: values.email,
+      password: values.password,
+    })
+
+    if (!session) {
+      toast({ title: "Something went wrong. Please try again." })
+
+      navigate("/sign-in")
+
+      return
+    }
+
+    const isLoggedIn = await checkAuthUser()
+
+    if (isLoggedIn) {
+      form.reset()
+
+      navigate("/")
+    } else {
+      toast({ title: "Login failed. Please try again." })
+
+      return
+    }
   }
 
   return (
@@ -145,7 +180,7 @@ const SignupForm = () => {
           />
 
           <Button type="submit" className="bg-blue-500">
-            {isLoading ? (
+            {isCreatingAccount ? (
               <div className="flex items-center justify-center gap-2">
                 <Loader /> Loading...
               </div>
