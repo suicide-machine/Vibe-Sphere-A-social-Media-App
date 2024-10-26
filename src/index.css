@@ -27,7 +27,7 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem
+    --radius: 0.5rem;
   }
   .dark {
     --background: 222.2 84% 4.9%;
@@ -53,7 +53,7 @@
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%
+    --chart-5: 340 75% 55%;
   }
 }
 @layer base {
@@ -63,4 +63,26 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* .custom-scrollbar {
+  overflow: auto;
+} */
+
+/* Universal scrollbar styling for all browsers */
+.custom-scrollbar {
+  overflow-y: auto; /* Enables scrollbar when content overflows */
+  scrollbar-width: thin; /* Firefox: makes the scrollbar thinner */
+  scrollbar-width: none; /* Firefox: sets thumb color and track color */
+}
+
+/* WebKit Browsers (Chrome, Safari, Edge) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 0px; /* Width of the scrollbar */
+  height: 0px; /* Height for horizontal scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f0f0f0; /* Track background color */
+  border-radius: 10px; /* Rounded corners for the track */
 }

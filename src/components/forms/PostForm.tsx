@@ -19,7 +19,7 @@ const formSchema = z.object({
   username: z.string().min(2).max(50),
 })
 
-const PostForm = () => {
+const PostForm = ({ post }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -34,7 +34,7 @@ const PostForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-9 w-full max-w-5xl"
+        className="flex flex-col gap-9 w-full max-w-5xl custom-scrollbar"
       >
         <FormField
           control={form.control}
@@ -63,7 +63,10 @@ const PostForm = () => {
               <FormLabel>Add Photos</FormLabel>
 
               <FormControl>
-                <FileUploader />
+                <FileUploader
+                  fieldChange={field.onChange}
+                  mediaUrl={post?.imageUrl}
+                />
               </FormControl>
 
               <FormMessage />
