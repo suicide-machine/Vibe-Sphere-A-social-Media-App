@@ -1,3 +1,4 @@
+import { X } from "lucide-react"
 import { z } from "zod"
 
 export const SignUpFormSchema = z.object({
@@ -16,4 +17,20 @@ export const SignInFormSchema = z.object({
   password: z
     .string()
     .min(8, { message: "Password must be atleast 8 characters" }),
+})
+
+export const PostFormSchema = z.object({
+  caption: z
+    .string()
+    .min(5, { message: "Minimum 5 characters required" })
+    .max(2000, { message: "Maximum 2000 characters" }),
+
+  file: z.custom<File[]>(),
+
+  location: z
+    .string()
+    .min(1, { message: "This field is required" })
+    .max(1000, { message: "Maximum 1000 characters" }),
+
+  tags: z.string(),
 })
