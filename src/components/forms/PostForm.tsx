@@ -16,16 +16,18 @@ import { Textarea } from "../ui/textarea"
 import FileUploader from "../shared/FileUploader"
 import { Models } from "appwrite"
 import { PostFormSchema } from "@/lib/validation"
-import { useCreatePost } from "@/lib/react-query/queries"
+import { useCreatePost, useUpdatePost } from "@/lib/react-query/queries"
 import { useUserContext } from "@/context/AuthContext"
 import { useToast } from "@/hooks/use-toast"
 import { useNavigate } from "react-router-dom"
+import Loader from "../shared/Loader"
 
 type PostFormProps = {
   post?: Models.Document
+  action: "Create" | "Update"
 }
 
-const PostForm = ({ post }: PostFormProps) => {
+const PostForm = ({ post, action }: PostFormProps) => {
   const { user } = useUserContext()
   const { toast } = useToast()
   const navigate = useNavigate()
@@ -44,8 +46,27 @@ const PostForm = ({ post }: PostFormProps) => {
   const { mutateAsync: createPost, isLoading: isLoadingCreate } =
     useCreatePost()
 
+  const { mutateAsync: updatePost, isLoading: isLoadingUpdate } =
+    useUpdatePost()
+
   async function onSubmit(values: z.infer<typeof PostFormSchema>) {
-    // console.log(values)
+    // Action = Update
+    if (post && action === "Update") {
+      const updatedPost = await updatePost({
+        ...values,
+        postId: post.$id,
+        imageId: post.imageId,
+        imageUrl: post.imageUrl,
+      })
+
+      if (!updatedPost) {
+        toast({
+          title: `${action} post failed. Please try again.`,
+        })
+      }
+
+      return navigate(`/posts/${post.$id}`)
+    }
 
     const newPost = await createPost({ ...values, userId: user.id })
 
@@ -149,8 +170,10 @@ const PostForm = ({ post }: PostFormProps) => {
           <Button
             type="submit"
             className="h-12 px-5 bg-green-500 flex gap-2 whitespace-nowrap"
+            disabled={isLoadingCreate || isLoadingUpdate}
           >
-            Submit
+            {(isLoadingCreate || isLoadingUpdate) && <Loader />}
+            {action} post
           </Button>
         </div>
       </form>
