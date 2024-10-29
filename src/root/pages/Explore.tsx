@@ -11,7 +11,7 @@ const Explore = () => {
 
   const debouncedSearch = useDebounce(searchValue, 500)
 
-  const { data: searchPosts, isFetching: isSearchFetching } =
+  const { data: searchedPosts, isFetching: isSearchFetching } =
     useSearchPosts(debouncedSearch)
 
   const { data: posts, fetchNextPage, hasNextPage } = useGetPosts()
@@ -78,7 +78,10 @@ const Explore = () => {
 
       <div className="flex flex-wrap gap-9 w-full max-w-5xl">
         {showSearchResults ? (
-          <SearchResults />
+          <SearchResults
+            isSearchFetching={isSearchFetching}
+            searchedPost={searchedPosts}
+          />
         ) : showPosts ? (
           <p>End of posts</p>
         ) : (
