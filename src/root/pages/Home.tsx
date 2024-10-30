@@ -1,6 +1,7 @@
 import Loader from "@/components/shared/Loader"
 import PostCard from "@/components/shared/PostCard"
-import { useGetRecentPosts } from "@/lib/react-query/queries"
+import UserCard from "@/components/shared/UserCard"
+import { useGetRecentPosts, useGetUsers } from "@/lib/react-query/queries"
 import { Models } from "appwrite"
 
 const Home = () => {
@@ -9,6 +10,12 @@ const Home = () => {
     isLoading: isPostLoading,
     isError: isErrorPosts,
   } = useGetRecentPosts()
+
+  const {
+    data: creators,
+    isLoading: isUserLoading,
+    isError: isUserError,
+  } = useGetUsers(10)
 
   return (
     <div className="flex flex-1">
@@ -30,6 +37,24 @@ const Home = () => {
             </ul>
           )}
         </div>
+      </div>
+
+      <div className="hidden lg:flex flex-col w-172 xl:w-465 px-6 py-10 gap-10 overflow-scroll custom-srollbar">
+        <h3 className="text-[24px] font-bold leading-[140%] tracking-tighter">
+          Top Creator
+        </h3>
+
+        {isUserLoading && !creators ? (
+          <Loader />
+        ) : (
+          <ul className="grid lg:grid-cols-2 gap-6">
+            {creators?.documents.map((creator) => (
+              <li key={creator?.$id}>
+                <UserCard user={creator} />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   )
