@@ -2,6 +2,7 @@ import { Models } from "appwrite"
 import { Link } from "react-router-dom"
 import PostStats from "./PostStats"
 import { useUserContext } from "@/context/AuthContext"
+import Loader from "./Loader"
 
 type GridPostListProps = {
   posts: Models.Document[]
@@ -15,6 +16,10 @@ const GridPostList = ({
   showStats = true,
 }: GridPostListProps) => {
   const { user } = useUserContext()
+
+  if (!posts) {
+    return <Loader />
+  }
 
   return (
     <ul className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-7 max-w-6xl">
@@ -35,13 +40,16 @@ const GridPostList = ({
             {showUser && (
               <div className="flex items-center justify-start gap-2 flex-1">
                 <img
-                  src={post.creator.imageUrl}
+                  src={
+                    post?.creator?.imageUrl ||
+                    "https://cdn-icons-png.flaticon.com/128/3177/3177440.png"
+                  }
                   alt="creator"
                   className="w-8 h-8 rounded-full"
                 />
 
                 <p className="line-clamp-1 text-blue-500 font-bold">
-                  {post.creator.name}
+                  {post?.creator?.name}
                 </p>
               </div>
             )}
