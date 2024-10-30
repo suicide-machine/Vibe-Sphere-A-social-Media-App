@@ -441,3 +441,20 @@ export async function getUsers(limit?: number) {
     console.log(error)
   }
 }
+
+// Get User By ID
+export async function getUserById(userId: string) {
+  try {
+    const user = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userId
+    )
+
+    if (!userId) throw Error
+
+    return user
+  } catch (error) {
+    console.log(error)
+  }
+}
