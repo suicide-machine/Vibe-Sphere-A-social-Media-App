@@ -37,3 +37,12 @@ export type UpdatePost = {
   location?: string
   tags?: string
 }
+
+export type UpdateUser = {
+  userId: string
+  name: string
+  imageId: string
+  imageUrl: URL | string
+  bio: string
+  file: File[]
+}

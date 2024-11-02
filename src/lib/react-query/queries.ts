@@ -1,4 +1,4 @@
-import { NewPost, NewUser, UpdatePost } from "@/types"
+import { NewPost, NewUser, UpdatePost, UpdateUser } from "@/types"
 import {
   useInfiniteQuery,
   useMutation,
@@ -22,6 +22,7 @@ import {
   signInAccount,
   signOutAccount,
   updatePost,
+  updateUser,
 } from "../appwrite/api"
 import { QUERY_KEYS } from "./queryKeys"
 
@@ -231,5 +232,23 @@ export const useGetUserById = (userId: string) => {
 
     // enabled: userId ? true : false,
     enabled: !!userId,
+  })
+}
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (user: UpdateUser) => updateUser(user),
+
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.$id],
+      })
+    },
   })
 }
